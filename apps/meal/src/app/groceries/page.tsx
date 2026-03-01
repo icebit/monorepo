@@ -1,6 +1,23 @@
 import { Nav } from "@/components/nav";
+import { GroceryList } from "@/components/grocery-list";
 
-const PANTRY_STAPLES = {
+const WEEKLY_BUY = [
+  "Onions",
+  "Garlic",
+  "Ginger",
+  "Lemons/limes",
+  "Cilantro",
+  "Spinach/kale",
+  "Bananas",
+  "Seasonal roasting veg",
+  "Oat milk",
+  "Chicken thighs (skinless)",
+  "Salmon or other fish",
+  "Firm tofu",
+  "Eggs",
+];
+
+const PANTRY_STAPLES: Record<string, string[]> = {
   "Dry Goods": [
     "Red lentils",
     "Green/brown lentils",
@@ -42,23 +59,7 @@ const PANTRY_STAPLES = {
     "Cardamom",
     "Smoked paprika",
   ],
-} as const;
-
-const WEEKLY_BUY = [
-  "Onions",
-  "Garlic",
-  "Ginger",
-  "Lemons/limes",
-  "Cilantro",
-  "Spinach/kale",
-  "Bananas",
-  "Seasonal roasting veg",
-  "Oat milk",
-  "Chicken thighs (skinless)",
-  "Salmon or other fish",
-  "Firm tofu",
-  "Eggs",
-];
+};
 
 export default function GroceriesPage() {
   return (
@@ -68,46 +69,19 @@ export default function GroceriesPage() {
           Groceries
         </h1>
 
-        <section className="mb-8">
-          <h2 className="text-xs font-medium text-muted uppercase tracking-wide mb-3">
-            Weekly Buy
-          </h2>
-          <div className="rounded-xl border border-border bg-surface divide-y divide-border">
-            {WEEKLY_BUY.map((item) => (
-              <label
-                key={item}
-                className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-background transition-colors"
-              >
-                <input
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-border accent-accent"
-                />
-                <span className="text-sm">{item}</span>
-              </label>
-            ))}
-          </div>
-        </section>
+        <GroceryList
+          title="Weekly Buy"
+          items={WEEKLY_BUY}
+          storageKey="grocery-weekly"
+        />
 
         {Object.entries(PANTRY_STAPLES).map(([category, items]) => (
-          <section key={category} className="mb-6">
-            <h2 className="text-xs font-medium text-muted uppercase tracking-wide mb-2">
-              Pantry: {category}
-            </h2>
-            <div className="rounded-xl border border-border bg-surface divide-y divide-border">
-              {items.map((item) => (
-                <label
-                  key={item}
-                  className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-background transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-border accent-accent"
-                  />
-                  <span className="text-sm">{item}</span>
-                </label>
-              ))}
-            </div>
-          </section>
+          <GroceryList
+            key={category}
+            title={`Pantry: ${category}`}
+            items={items}
+            storageKey={`grocery-pantry-${category}`}
+          />
         ))}
       </main>
       <Nav />

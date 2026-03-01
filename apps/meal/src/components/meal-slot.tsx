@@ -1,6 +1,8 @@
 "use client";
 
 import type { Meal, MealSource, Satisfaction } from "@/lib/types";
+import { addMealLog } from "@/lib/storage";
+import { toDateKey } from "@/lib/utils";
 import { useState } from "react";
 
 type SlotName = "smoothie" | "breakfast" | "lunch" | "dinner";
@@ -36,9 +38,22 @@ type MealSlotProps = {
 export function MealSlot({ slot, plannedMeal, isOfficeDay }: MealSlotProps) {
   const [logged, setLogged] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const [selectedSource, setSelectedSource] = useState<MealSource | null>(null);
 
-  // Context hints based on slot and whether it's an office day
   const hint = getHint(slot, isOfficeDay, plannedMeal);
+
+  function handleLog(satisfaction: Satisfaction) {
+    addMealLog({
+      id: `${toDateKey(new Date())}-${slot}-${Date.now()}`,
+      date: toDateKey(new Date()),
+      slot,
+      mealId: plannedMeal?.id,
+      source: selectedSource ?? "home-cooked",
+      satisfaction,
+    });
+    setLogged(true);
+    setExpanded(false);
+  }
 
   if (logged) {
     return (
@@ -72,7 +87,9 @@ export function MealSlot({ slot, plannedMeal, isOfficeDay }: MealSlotProps) {
       >
         <div className="flex items-center justify-between">
           <span className="text-sm font-medium">{SLOT_LABELS[slot]}</span>
-          <span className="text-xs text-muted">{expanded ? "close" : "log"}</span>
+          <span className="text-xs text-muted">
+            {expanded ? "close" : "log"}
+          </span>
         </div>
         {plannedMeal && (
           <p className="mt-1 text-sm text-foreground/70">{plannedMeal.name}</p>
@@ -97,7 +114,12 @@ export function MealSlot({ slot, plannedMeal, isOfficeDay }: MealSlotProps) {
               {SOURCE_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
-                  className="rounded-full border border-border px-2.5 py-1 text-xs hover:border-accent hover:text-accent transition-colors"
+                  onClick={() => setSelectedSource(opt.value)}
+                  className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                    selectedSource === opt.value
+                      ? "border-accent bg-accent-light text-accent"
+                      : "border-border hover:border-accent hover:text-accent"
+                  }`}
                 >
                   {opt.label}
                 </button>
@@ -111,7 +133,7 @@ export function MealSlot({ slot, plannedMeal, isOfficeDay }: MealSlotProps) {
               {SATISFACTION_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
-                  onClick={() => setLogged(true)}
+                  onClick={() => handleLog(opt.value)}
                   className="rounded-full border border-border px-2.5 py-1 text-xs hover:border-accent hover:text-accent transition-colors"
                 >
                   {opt.label}
@@ -131,7 +153,7 @@ function getHint(
   plannedMeal?: Meal
 ): string | null {
   if (plannedMeal) return null;
-  if (slot === "smoothie") return "5 min — blend and go";
+  if (slot === "smoothie") return "5 min -- blend and go";
   if (slot === "lunch" && isOfficeDay) return "Bring something or Cava?";
   return null;
 }

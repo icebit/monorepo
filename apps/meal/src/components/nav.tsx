@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/", label: "Today" },
   { href: "/meals", label: "Meals" },
   { href: "/groceries", label: "Groceries" },
+  { href: "/data", label: "Data" },
 ] as const;
 
 export function Nav() {
