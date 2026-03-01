@@ -1,22 +1,13 @@
 import { MealSlot } from "@/components/meal-slot";
 import { Nav } from "@/components/nav";
-import { meals } from "@/lib/meals";
+import { DayClearButtons } from "@/components/day-clear-buttons";
+import { getTodaysPlan } from "@/lib/daily-plan";
 import { formatDate, isWeekday } from "@/lib/utils";
-
-// Temporary: pick some default meals for today to show the UI working.
-// This will be replaced by actual plan data from storage.
-function getTodaysPlan() {
-  const smoothie = meals.find((m) => m.id === "green-power-smoothie");
-  const lunch = meals.find((m) => m.id === "grain-bowl");
-  const dinner = meals.find((m) => m.id === "red-lentil-dal");
-
-  return { smoothie, breakfast: undefined, lunch, dinner };
-}
 
 export default function DailyView() {
   const today = new Date();
   const officeDay = isWeekday(today);
-  const plan = getTodaysPlan();
+  const plan = getTodaysPlan(today);
 
   return (
     <>
@@ -53,14 +44,7 @@ export default function DailyView() {
           />
         </div>
 
-        <section className="mt-8">
-          <h2 className="text-sm font-medium text-muted mb-3">Prep tonight</h2>
-          <div className="rounded-xl border border-border bg-surface p-4">
-            <p className="text-sm">
-              No prep tasks yet. Plan your week to see prep reminders here.
-            </p>
-          </div>
-        </section>
+        <DayClearButtons />
       </main>
       <Nav />
     </>

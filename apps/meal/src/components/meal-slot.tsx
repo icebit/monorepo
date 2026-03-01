@@ -4,6 +4,7 @@ import type { Meal, MealSource, Satisfaction } from "@/lib/types";
 import { addMealLog } from "@/lib/storage";
 import { toDateKey } from "@/lib/utils";
 import { useState } from "react";
+import Link from "next/link";
 
 type SlotName = "smoothie" | "breakfast" | "lunch" | "dinner";
 
@@ -101,39 +102,50 @@ export function MealSlot({ slot, plannedMeal, isOfficeDay }: MealSlotProps) {
 
   return (
     <div className="rounded-xl border border-border bg-surface p-4">
-      {/* Header - always visible, tappable to expand */}
-      <button
-        onClick={() => {
-          if (state.step === "idle") {
-            setState({
-              step: plannedMeal ? "planned-confirm" : "unplanned-log",
-            });
-          } else {
-            setState({ step: "idle" });
-          }
-        }}
-        className="w-full text-left"
-      >
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">{SLOT_LABELS[slot]}</span>
-          <span className="text-xs text-muted">
-            {state.step === "idle" ? "log" : "close"}
-          </span>
-        </div>
-        {plannedMeal && state.step === "idle" && (
-          <p className="mt-1 text-sm text-foreground/70">{plannedMeal.name}</p>
-        )}
-        {!plannedMeal && hint && state.step === "idle" && (
-          <p className="mt-1 text-xs text-muted italic">{hint}</p>
-        )}
-      </button>
+      {/* Header - always visible */}
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{SLOT_LABELS[slot]}</span>
+        <button
+          onClick={() => {
+            if (state.step === "idle") {
+              setState({
+                step: plannedMeal ? "planned-confirm" : "unplanned-log",
+              });
+            } else {
+              setState({ step: "idle" });
+            }
+          }}
+          className="text-xs text-muted hover:text-foreground"
+        >
+          {state.step === "idle" ? "log" : "close"}
+        </button>
+      </div>
+      {plannedMeal && state.step === "idle" && (
+        <Link
+          href={`/meals/${plannedMeal.id}`}
+          className="mt-1 text-sm text-foreground/70 hover:text-accent transition-colors block"
+        >
+          {plannedMeal.name} →
+        </Link>
+      )}
+      {!plannedMeal && hint && state.step === "idle" && (
+        <p className="mt-1 text-xs text-muted italic">{hint}</p>
+      )}
 
       {/* Planned meal flow: confirm you made it */}
       {state.step === "planned-confirm" && plannedMeal && (
         <div className="mt-3 flex flex-col gap-3 border-t border-border pt-3">
-          <p className="text-sm">
-            Did you make <span className="font-medium">{plannedMeal.name}</span>?
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm">
+              Did you make <span className="font-medium">{plannedMeal.name}</span>?
+            </p>
+            <Link
+              href={`/meals/${plannedMeal.id}`}
+              className="text-xs text-accent hover:text-accent/80"
+            >
+              recipe →
+            </Link>
+          </div>
           <div className="flex gap-2">
             <button
               onClick={() => setState({ step: "planned-rate" })}
