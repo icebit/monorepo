@@ -23,11 +23,11 @@ const DINNERS = meals.filter(
     (m.categories.includes("dinner") || m.categories.includes("flexible"))
 );
 
-export function getTodaysPlan(date: Date) {
-  const smoothie = pickByDate(SMOOTHIES, date);
+export function getTodaysPlan(date: Date, seed: number = 0) {
+  const smoothie = pickByDate(SMOOTHIES, date, seed);
   const breakfast = meals.find((m) => m.id === "overnight-oats");
-  const lunch = pickByDate(PORTABLE_LUNCHES, date, 3);
-  const dinner = pickByDate(DINNERS, date, 7);
+  const lunch = pickByDate(PORTABLE_LUNCHES, date, seed + 3);
+  const dinner = pickByDate(DINNERS, date, seed + 7);
 
   return { smoothie, breakfast, lunch, dinner };
 }

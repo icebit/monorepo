@@ -47,7 +47,9 @@ type SlotState =
   | { step: "done" };
 
 export function MealSlot({ slot, plannedMeal, isOfficeDay }: MealSlotProps) {
-  const [state, setState] = useState<SlotState>({ step: "idle" });
+  const [state, setState] = useState<SlotState>({
+    step: plannedMeal ? "planned-confirm" : "unplanned-log",
+  });
   const [selectedSource, setSelectedSource] = useState<MealSource | null>(null);
   const [description, setDescription] = useState("");
 
