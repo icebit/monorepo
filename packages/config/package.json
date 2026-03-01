@@ -1,0 +1,5 @@
+{
+  "name": "@mono/config",
+  "private": true,
+  "files": ["tsconfig.base.json", "tsconfig.next.json", "tsconfig.lib.json"]
+}

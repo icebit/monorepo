@@ -1,0 +1,7 @@
+{
+  "extends": "@mono/config/tsconfig.lib.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
+  "include": ["src"]
+}
