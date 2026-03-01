@@ -1,34 +1,46 @@
 "use client";
 
 import { Nav } from "@/components/nav";
-import { exportData, loadData, addGroceryTrip } from "@/lib/storage";
+import { exportData, loadData } from "@/lib/storage";
 import { toDateKey } from "@/lib/utils";
 import { useState } from "react";
 
 export default function DataPage() {
-  const [copied, setCopied] = useState(false);
-  const [loggedTrip, setLoggedTrip] = useState(false);
-
-  function handleExport() {
-    const json = exportData();
-    navigator.clipboard.writeText(json).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  }
-
-  function handleLogTrip() {
-    addGroceryTrip({
-      id: `trip-${Date.now()}`,
-      date: toDateKey(new Date()),
-      items: [],
-    });
-    setLoggedTrip(true);
-  }
-
+  const [status, setStatus] = useState<string | null>(null);
   const data = loadData();
   const logCount = data.mealLogs.length;
   const tripCount = data.groceryTrips.length;
+
+  async function handleExport() {
+    const json = exportData();
+    const filename = `meal-data-${toDateKey(new Date())}.json`;
+
+    // Try native share (works on Android/mobile) with file attachment
+    if (navigator.share && navigator.canShare) {
+      const file = new File([json], filename, { type: "application/json" });
+      const shareData = { files: [file] };
+
+      if (navigator.canShare(shareData)) {
+        try {
+          await navigator.share(shareData);
+          setStatus("Shared");
+          return;
+        } catch {
+          // User cancelled or share failed, fall through to download
+        }
+      }
+    }
+
+    // Fallback: download as a file
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+    setStatus("Downloaded");
+  }
 
   return (
     <>
@@ -51,31 +63,14 @@ export default function DataPage() {
           </div>
 
           <button
-            onClick={handleLogTrip}
-            disabled={loggedTrip}
-            className={`rounded-xl border p-4 text-left transition-colors ${
-              loggedTrip
-                ? "border-accent/30 bg-accent-light/40"
-                : "border-border bg-surface hover:border-accent"
-            }`}
-          >
-            <p className="text-sm font-medium">
-              {loggedTrip ? "Grocery trip logged" : "I shopped today"}
-            </p>
-            <p className="text-xs text-muted mt-0.5">
-              Tap to record a grocery trip timestamp
-            </p>
-          </button>
-
-          <button
             onClick={handleExport}
             className="rounded-xl border border-border bg-surface p-4 text-left hover:border-accent transition-colors"
           >
             <p className="text-sm font-medium">
-              {copied ? "Copied to clipboard" : "Export all data"}
+              {status ? status : "Export data"}
             </p>
             <p className="text-xs text-muted mt-0.5">
-              Copies JSON to clipboard for analysis sessions
+              Share or download all logged data as JSON
             </p>
           </button>
         </div>

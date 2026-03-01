@@ -30,12 +30,20 @@ export type DayOfWeek =
   | "saturday"
   | "sunday";
 
+export type Ingredient = {
+  item: string;
+  amount: string;
+  note?: string;
+};
+
 // The core meal template, seeded from archetypes
 export type Meal = {
   id: string;
   name: string;
   description: string;
-  ingredients: string[];
+  ingredients: Ingredient[];
+  steps: string[];
+  servings: number;
   categories: MealCategory[];
   prepMinutes: number;
   batchFriendly: boolean;

@@ -1,5 +1,10 @@
+"use client";
+
 import { Nav } from "@/components/nav";
 import { GroceryList } from "@/components/grocery-list";
+import { addGroceryTrip } from "@/lib/storage";
+import { toDateKey } from "@/lib/utils";
+import { useState, useCallback, useRef } from "react";
 
 const WEEKLY_BUY = [
   "Onions",
@@ -62,6 +67,64 @@ const PANTRY_STAPLES: Record<string, string[]> = {
 };
 
 export default function GroceriesPage() {
+  const [tripSaved, setTripSaved] = useState(false);
+  // Accumulate all checked items across lists
+  const checkedItems = useRef<Record<string, string[]>>({});
+
+  const handleCheckedChange = useCallback(
+    (key: string) => (items: string[]) => {
+      checkedItems.current[key] = items;
+    },
+    []
+  );
+
+  function finishTrip() {
+    const allChecked = Object.values(checkedItems.current).flat();
+    if (allChecked.length === 0) return;
+
+    addGroceryTrip({
+      id: `trip-${Date.now()}`,
+      date: toDateKey(new Date()),
+      items: allChecked.map((name) => ({
+        id: `item-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+        name,
+        isPantryStaple: !WEEKLY_BUY.includes(name),
+        checked: true,
+      })),
+    });
+
+    // Clear all grocery checklists
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith("grocery-")) {
+        localStorage.removeItem(key);
+      }
+    });
+
+    setTripSaved(true);
+  }
+
+  if (tripSaved) {
+    return (
+      <>
+        <main className="flex-1 px-4 py-6 flex flex-col items-center justify-center">
+          <div className="text-center">
+            <p className="text-lg font-semibold">Trip logged</p>
+            <p className="text-sm text-muted mt-1">
+              Checked items saved. Lists cleared for next trip.
+            </p>
+            <button
+              onClick={() => setTripSaved(false)}
+              className="mt-4 rounded-full border border-border px-4 py-2 text-sm hover:border-accent hover:text-accent transition-colors"
+            >
+              Back to lists
+            </button>
+          </div>
+        </main>
+        <Nav />
+      </>
+    );
+  }
+
   return (
     <>
       <main className="flex-1 px-4 py-6">
@@ -73,6 +136,7 @@ export default function GroceriesPage() {
           title="Weekly Buy"
           items={WEEKLY_BUY}
           storageKey="grocery-weekly"
+          onCheckedChange={handleCheckedChange("weekly")}
         />
 
         {Object.entries(PANTRY_STAPLES).map(([category, items]) => (
@@ -81,9 +145,20 @@ export default function GroceriesPage() {
             title={`Pantry: ${category}`}
             items={items}
             storageKey={`grocery-pantry-${category}`}
+            onCheckedChange={handleCheckedChange(category)}
           />
         ))}
       </main>
+
+      {/* Sticky finish button at bottom, above nav */}
+      <div className="sticky bottom-12 px-4 pb-3">
+        <button
+          onClick={finishTrip}
+          className="w-full rounded-xl bg-accent py-3 text-sm font-medium text-white shadow-lg hover:bg-accent/90 transition-colors"
+        >
+          Finish trip — save checked items
+        </button>
+      </div>
       <Nav />
     </>
   );

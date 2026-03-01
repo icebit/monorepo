@@ -1,5 +1,6 @@
 import { Nav } from "@/components/nav";
 import { meals } from "@/lib/meals";
+import Link from "next/link";
 
 export default function MealsPage() {
   const grouped = {
@@ -39,9 +40,10 @@ export default function MealsPage() {
             </h2>
             <div className="flex flex-col gap-2">
               {section.meals.map((meal) => (
-                <div
+                <Link
                   key={meal.id}
-                  className="rounded-xl border border-border bg-surface p-4"
+                  href={`/meals/${meal.id}`}
+                  className="rounded-xl border border-border bg-surface p-4 hover:border-accent transition-colors block"
                 >
                   <div className="flex items-start justify-between">
                     <div>
@@ -53,11 +55,14 @@ export default function MealsPage() {
                         {meal.onePot && " / one-pot"}
                       </p>
                     </div>
+                    <span className="text-xs text-muted mt-0.5">
+                      {meal.servings} {meal.servings === 1 ? "serving" : "servings"}
+                    </span>
                   </div>
                   <p className="text-xs text-foreground/60 mt-2">
                     {meal.description}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
           </section>

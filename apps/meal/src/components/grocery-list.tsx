@@ -1,39 +1,52 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
 type GroceryListProps = {
   title: string;
   items: string[];
   storageKey: string;
+  onCheckedChange?: (checked: string[]) => void;
 };
 
-export function GroceryList({ title, items, storageKey }: GroceryListProps) {
+export function GroceryList({
+  title,
+  items,
+  storageKey,
+  onCheckedChange,
+}: GroceryListProps) {
   const [checked, setChecked] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const stored = localStorage.getItem(storageKey);
     if (stored) {
-      setChecked(new Set(JSON.parse(stored)));
+      const parsed = new Set(JSON.parse(stored) as string[]);
+      setChecked(parsed);
+      onCheckedChange?.([...parsed]);
     }
-  }, [storageKey]);
+  }, [storageKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function toggle(item: string) {
-    setChecked((prev) => {
-      const next = new Set(prev);
-      if (next.has(item)) {
-        next.delete(item);
-      } else {
-        next.add(item);
-      }
-      localStorage.setItem(storageKey, JSON.stringify([...next]));
-      return next;
-    });
-  }
+  const toggle = useCallback(
+    (item: string) => {
+      setChecked((prev) => {
+        const next = new Set(prev);
+        if (next.has(item)) {
+          next.delete(item);
+        } else {
+          next.add(item);
+        }
+        localStorage.setItem(storageKey, JSON.stringify([...next]));
+        onCheckedChange?.([...next]);
+        return next;
+      });
+    },
+    [storageKey, onCheckedChange]
+  );
 
   function clearAll() {
     setChecked(new Set());
     localStorage.removeItem(storageKey);
+    onCheckedChange?.([]);
   }
 
   const checkedCount = items.filter((i) => checked.has(i)).length;
