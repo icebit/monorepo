@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import { Hydrate } from "@/components/hydrate";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -8,13 +9,13 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Meal",
-  description: "Personal meal planning and tracking",
+  title: "Daily",
+  description: "Personal daily system",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Meal",
+    title: "Daily",
   },
 };
 
@@ -33,6 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} font-sans antialiased`}>
+        <Hydrate />
         <div className="mx-auto max-w-lg min-h-dvh flex flex-col">
           {children}
         </div>

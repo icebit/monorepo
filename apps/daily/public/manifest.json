@@ -1,7 +1,7 @@
 {
-  "name": "Meal",
-  "short_name": "Meal",
-  "description": "Personal meal planning and tracking",
+  "name": "Daily",
+  "short_name": "Daily",
+  "description": "Personal daily system",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fafaf9",

@@ -98,3 +98,11 @@ export type GroceryTrip = {
   items: GroceryItem[];
   notes?: string;
 };
+
+export type WorkoutLog = {
+  id: string;
+  date: string;
+  workoutId: string;
+  completed: boolean;
+  notes?: string;
+};

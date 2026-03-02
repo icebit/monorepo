@@ -4,14 +4,17 @@ import { MealSlot } from "@/components/meal-slot";
 import { Nav } from "@/components/nav";
 import { DayClearButtons } from "@/components/day-clear-buttons";
 import { getTodaysPlan } from "@/lib/daily-plan";
+import { getTodaysWorkout } from "@/lib/daily-workout";
 import { formatDate, isWeekday } from "@/lib/utils";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function DailyView() {
   const today = new Date();
   const officeDay = isWeekday(today);
   const [seed, setSeed] = useState(0);
   const plan = getTodaysPlan(today, seed);
+  const workout = getTodaysWorkout(today, seed);
 
   return (
     <>
@@ -33,6 +36,32 @@ export default function DailyView() {
           </button>
         </header>
 
+        {/* Workout */}
+        {workout ? (
+          <Link
+            href={`/workout/${workout.id}`}
+            className="rounded-xl border border-border bg-surface p-4 mb-4 hover:border-accent transition-colors block"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-medium text-muted uppercase tracking-wide">
+                  Workout
+                </p>
+                <p className="text-sm font-medium mt-1">{workout.name} →</p>
+              </div>
+              <span className="text-xs text-muted">{workout.durationMinutes} min</span>
+            </div>
+          </Link>
+        ) : (
+          <div className="rounded-xl border border-border bg-surface p-4 mb-4">
+            <p className="text-xs font-medium text-muted uppercase tracking-wide">
+              Workout
+            </p>
+            <p className="text-sm text-muted mt-1">Rest day</p>
+          </div>
+        )}
+
+        {/* Meals */}
         <div className="flex flex-col gap-3">
           <MealSlot
             key={`smoothie-${seed}`}

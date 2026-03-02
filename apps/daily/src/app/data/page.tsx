@@ -10,6 +10,7 @@ export default function DataPage() {
   const data = loadData();
   const logCount = data.mealLogs.length;
   const tripCount = data.groceryTrips.length;
+  const workoutCount = data.workoutLogs.length;
 
   async function handleExport() {
     const json = exportData();
@@ -59,6 +60,13 @@ export default function DataPage() {
             <p className="text-sm font-medium">Grocery trips</p>
             <p className="text-xs text-muted mt-0.5">
               {tripCount} {tripCount === 1 ? "trip" : "trips"} logged
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-border bg-surface p-4">
+            <p className="text-sm font-medium">Workouts</p>
+            <p className="text-xs text-muted mt-0.5">
+              {workoutCount} {workoutCount === 1 ? "session" : "sessions"} logged
             </p>
           </div>
 
