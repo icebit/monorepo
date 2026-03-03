@@ -113,20 +113,25 @@ export default function HistoryPage() {
                 {day.workoutLogs.map((log) => (
                   <div
                     key={log.id}
-                    className="rounded-xl border border-border bg-surface p-3 flex items-center justify-between"
+                    className="rounded-xl border border-border bg-surface p-3"
                   >
-                    <div>
-                      <p className="text-xs text-muted uppercase tracking-wide">Workout</p>
-                      <p className="text-sm font-medium mt-0.5">
-                        {getWorkoutName(log.workoutId)}
-                      </p>
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="text-xs text-muted uppercase tracking-wide">Workout</p>
+                        <p className="text-sm font-medium mt-0.5">
+                          {getWorkoutName(log.workoutId)}
+                        </p>
+                        {log.notes && (
+                          <p className="text-xs text-muted mt-1">{log.notes}</p>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => deleteWorkoutLog(log.id)}
+                        className="text-xs text-muted hover:text-red-600 transition-colors"
+                      >
+                        delete
+                      </button>
                     </div>
-                    <button
-                      onClick={() => deleteWorkoutLog(log.id)}
-                      className="text-xs text-muted hover:text-red-600 transition-colors"
-                    >
-                      delete
-                    </button>
                   </div>
                 ))}
 
@@ -155,6 +160,9 @@ export default function HistoryPage() {
                             {log.satisfaction}
                           </button>
                         </div>
+                        {log.notes && (
+                          <p className="text-xs text-muted mt-1">{log.notes}</p>
+                        )}
                       </div>
                       <button
                         onClick={() => deleteMealLog(log.id)}

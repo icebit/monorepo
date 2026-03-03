@@ -47,6 +47,7 @@ export function WorkoutView({ workout }: WorkoutViewProps) {
   const [checkedExercises, setCheckedExercises] = useState<Set<number>>(new Set());
   const [showStretch, setShowStretch] = useState(false);
   const [logged, setLogged] = useState(false);
+  const [notes, setNotes] = useState("");
 
   const allDone = checkedExercises.size === workout.exercises.length;
 
@@ -68,6 +69,7 @@ export function WorkoutView({ workout }: WorkoutViewProps) {
       date: toDateKey(new Date()),
       workoutId: workout.id,
       completed: true,
+      notes: notes || undefined,
     });
     setLogged(true);
   }
@@ -136,6 +138,17 @@ export function WorkoutView({ workout }: WorkoutViewProps) {
       <div className="rounded-xl border border-border bg-surface p-4 mb-6">
         <p className="text-xs text-foreground/60">{workout.notes}</p>
       </div>
+
+      {/* Session notes */}
+      {!logged && (
+        <input
+          type="text"
+          placeholder="Session notes (optional)"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          className="w-full rounded-lg border border-border bg-background px-3 py-2 text-xs outline-none focus:border-accent mb-3"
+        />
+      )}
 
       {/* Finish / Log */}
       {!logged ? (
